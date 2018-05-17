@@ -2,6 +2,13 @@ public class QueryMessage extends Message {
     public static int maxSteps = 50;
     private boolean resent;
 
+    /**
+     * QueryMessage()
+     * Default constructor
+     *
+     * @param event
+     * @param startNode
+     */
     public QueryMessage(int event, Node startNode){
         super(event, startNode);
         resent = false;

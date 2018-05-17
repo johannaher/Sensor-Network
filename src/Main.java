@@ -1,4 +1,6 @@
-
+/**
+ * main
+ */
 public class Main {
     public static void main(String[] args) {
         Environment environment = new Environment(50, 50, 4, 10000, 2);

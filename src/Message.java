@@ -5,6 +5,13 @@ public abstract class Message {
     protected int eventId;
     public boolean hasMoved;
 
+    /**
+     * Message()
+     * Default constructor
+     *
+     * @param eventId
+     * @param startNode
+     */
     public Message(int eventId, Node startNode){
         this.eventId = eventId;
         path = new Stack<Node>();

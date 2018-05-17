@@ -8,10 +8,10 @@ public class RoutingTable {
     private HashMap<Integer, Stack<Node>> eventPaths;
 
     /**
-     * Constructor
+     * RoutingTable()
+     * Default Constructor
      *
      */
-
     public RoutingTable(){
         this.eventPaths = new HashMap<>();
     }

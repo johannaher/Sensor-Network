@@ -9,6 +9,16 @@ public class Environment {
     private int xSize, ySize, eventChance, timer;
     private float queryNodesSuccessRate;
 
+    /**
+     * Environment()
+     * Default constructor
+     *
+     * @param height
+     * @param width
+     * @param queryNodes
+     * @param eventChance
+     * @param agentChance
+     */
     public Environment(int height, int width, int queryNodes, int eventChance, int agentChance){
         this.xSize = width;
         this.ySize = height;

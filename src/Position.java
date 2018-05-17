@@ -2,6 +2,13 @@
 public class Position {
     private int x, y;
 
+    /**
+     * Position()
+     * Default constructor
+     *
+     * @param x
+     * @param y
+     */
     public Position(int x, int y) {
         this.x = x;
         this.y = y;

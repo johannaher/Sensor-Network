@@ -1,6 +1,16 @@
+/**
+ * Direction
+ * An enum for all the directions of a nodes neigbours.
+ */
 public enum Direction {
     NORTH, NORTHEAST, EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST;
 
+    /**
+     * opposite()
+     * A function that gets the opposite direction
+     *
+     * @return Direction - the opposite direction
+     */
     public Direction opposite(){
         switch (this){
             case NORTH: return Direction.SOUTH;

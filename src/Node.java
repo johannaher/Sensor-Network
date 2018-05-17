@@ -19,6 +19,13 @@ public class Node {
     private HashMap<QueryMessage, Integer> querysSent;
     private int agentChance, querysAnswered;
 
+    /**
+     * Node()
+     * default constructor
+     *
+     * @param position
+     * @param agentChance
+     */
     public Node(Position position, int agentChance){
         this.nodePosition = position;
         this.neighbours = new Node[8];
@@ -159,8 +166,9 @@ public class Node {
 
     private void messageHandler(ResponseMessage responseMessage){
         if (responseMessage.path.empty()) {
-            System.out.println("EVENT HITTAT:\n Event" + responseMessage.event.getEventId() + " started at position: "
-                    + responseMessage.event.getEventPosition() + ", at time: "
+            System.out.println("EVENT FOUND:\n Event" + responseMessage.event.getEventId() + " started at position: ["
+                    + responseMessage.event.getEventPosition().nodePosition.getX() +","
+                    + responseMessage.event.getEventPosition().nodePosition.getY()+ "], at timestep: "
                     + responseMessage.event.getTimestamp() + " \n");
             querysAnswered++;
         } else {

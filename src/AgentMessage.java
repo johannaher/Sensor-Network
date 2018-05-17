@@ -1,4 +1,3 @@
-
 /**
  * AgentMessage
  * A subclass to Message
@@ -15,6 +14,7 @@ public class AgentMessage extends Message{
     /**
      * AgentMessage()
      * Default constructor
+     *
      */
     public AgentMessage(int event, Node startNode){
         super(event, startNode);
@@ -40,5 +40,4 @@ public class AgentMessage extends Message{
         AMRoutingTable.setEventPath(eventId, path);
         hasMoved = true;
     }
-
 }
