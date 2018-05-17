@@ -5,10 +5,9 @@ public class Environment {
 
     private Node[][] nodes;
     private Node[] queryNodes;
-    private int timer;
     private ArrayList<Event> events;
-    private int xSize, ySize;
-    private int eventChance;
+    private int xSize, ySize, eventChance, timer;
+    private float queryNodesSuccessRate;
 
     public Environment(int height, int width, int queryNodes, int eventChance, int agentChance){
         this.xSize = width;
@@ -78,12 +77,16 @@ public class Environment {
                 if(random.nextInt(eventChance) == 1){
                    events.add(nodes[x][y].createEvent(events.size(), timer));
                 }
-                nodes[x][y].messageHandler();
+                nodes[x][y].update();
                 //varje nod kollar och hanterar första meddelandet i kön
-
-
             }
         }
+
+        queryNodesSuccessRate = 0;
+        for(int i = 0 ; i < queryNodes.length ; i++){
+            queryNodesSuccessRate += queryNodes[i].getSuccessRate();
+        }
+
         timer++;
     }
 
@@ -105,6 +108,18 @@ public class Environment {
 
     public int getTimer(){
         return timer;
+    }
+
+    public float getQueryNodesSuccessRate(){
+        return queryNodesSuccessRate /= queryNodes.length;
+    }
+
+    public int getQueriesSent(){
+        return getQueriesSent();
+    }
+
+    public int getNumOfEvents(){
+        return events.size();
     }
 
  /*  private void createEvent(Node node){

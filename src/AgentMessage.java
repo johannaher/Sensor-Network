@@ -10,7 +10,7 @@
 
 public class AgentMessage extends Message{
     public RoutingTable AMRoutingTable;
-    public final int maxSteps = 50;
+    public static int maxSteps = 50;
 
     /**
      * AgentMessage()
