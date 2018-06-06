@@ -45,6 +45,14 @@ public class Node {
         messageHandler();
     }
 
+    /**
+     * Method used only for test
+     * @return
+     */
+    public Position getNodePosition(){
+        return nodePosition;
+    }
+
     private void messageHandler(){
         //plocka ut och kolla första meddelandet i kön
         //Message messageType = messageQueue.peek();
@@ -176,6 +184,14 @@ public class Node {
         }
     }
 
+    /**
+     * Method only used in test
+     * @return
+     */
+    public Message peekInQueue(){
+        return messageQueue.peek();
+    }
+
     public void setQueryNode(){
         isQueryNode = !isQueryNode;
     }
@@ -211,6 +227,14 @@ public class Node {
             neighbours[direction.ordinal()] = neighbourNode;
             neighbourNode.setNeighbour(this, direction.opposite());
         }
+    }
+
+    /**
+     * method only used for testing
+     * @return
+     */
+    public Node[] getNeighbours(){
+        return neighbours;
     }
 
     public Event createEvent(int eventId, int timestamp){

@@ -72,6 +72,21 @@ public class Environment {
         randomizeQueryNodes();
     }
 
+    /**
+     * method only used for testing
+     * @return
+     */
+    public Node[] getQueryNodes(){
+        return queryNodes;
+    }
+    /**
+     * method only used for testing
+     * @return
+     */
+    public Node getNode(Position position){
+        return nodes[position.getX()][position.getY()];
+    }
+
     public void timetick(){
         Random random = new Random();
 
