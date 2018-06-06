@@ -17,16 +17,16 @@ public class Node {
     private boolean isQueryNode;
     private HashMap<Integer, Event> nodesEvents;
     private HashMap<QueryMessage, Integer> querysSent;
-    private int agentChance, querysAnswered;
-
+    private int querysAnswered;
+    private float agentChance;
     /**
      * Node()
-     * default constructor
+     * Constructor, requires a position and the chance to spawn an agent when spawning an event
      *
      * @param position
      * @param agentChance
      */
-    public Node(Position position, int agentChance){
+    public Node(Position position, float agentChance){
         this.nodePosition = position;
         this.neighbours = new Node[8];
         this.nodeRoutingTable = new RoutingTable();
@@ -38,6 +38,9 @@ public class Node {
         this.querysAnswered = 0;
     }
 
+    /**
+     * Update method to check querys and workqueue.
+     */
     public void update(){
         if(isQueryNode){
             checkQueries();
@@ -53,6 +56,9 @@ public class Node {
         return nodePosition;
     }
 
+    /**
+     * Handler for work queue. Gets the first element in queue, and calls new handler depending on message type.
+     */
     private void messageHandler(){
         //plocka ut och kolla första meddelandet i kön
         //Message messageType = messageQueue.peek();
@@ -82,7 +88,11 @@ public class Node {
         }
     }
 
-    public void checkQueries(){
+    /**
+     * Method used if node is a query node.
+     * Checks every query that has been sent and if they should be resent or not.
+     */
+    private void checkQueries(){
         for (Map.Entry<QueryMessage, Integer> queryMessage: querysSent.entrySet()) {
             if(queryMessage.getValue() >= QueryMessage.maxSteps * 8 && !queryMessage.getKey().hasBeenResent()){
                 QueryMessage newQuery = new QueryMessage(queryMessage.getKey().eventId, this);
@@ -95,6 +105,14 @@ public class Node {
         }
     }
 
+    /**
+     * Handler for query messages.
+     * Checks if requested event is known.
+     * If node created the event, discard query and create a response message to send back to query node.
+     * If only knows about the event, send query in right direction.
+     *
+     * @param queryMessage to be handled
+     */
     private void messageHandler(QueryMessage queryMessage){
         //System.out.println("nod[" + nodePosition.getX() + ":" + nodePosition.getY() + "] har query" + queryMessage.eventId + ", ålder:" + queryMessage.path.size());
 
@@ -141,15 +159,15 @@ public class Node {
         }
     }
 
+    /**
+     * Handler for agent message.
+     * Syncs Routing tables with agent and node.
+     * Checks what neighbours agent has visited and tries to send agent to an unvisited neighbour.
+     * If all neighbours are visited, sends it to a rendom neighbour.
+     * @param agentMessage
+     */
     private void messageHandler(AgentMessage agentMessage) {
         nodeRoutingTable.syncTables(agentMessage.AMRoutingTable);
-        //System.out.println("Syncing table between Node[" + this.nodePosition.getX() + ":" + nodePosition.getY() + "] and agent" + agentMessage.getEventId());
-        //jämför vägar
-        //kortare hittad?
-        //byt ut routingtabell
-        //noden har längre väg eller ingen väg?
-        //ge routingtabell
-        //radnom steg till nod som ej besökts
 
         Node nextNode = null;
 
@@ -172,6 +190,13 @@ public class Node {
         //om alla grannar besökta, random nod
     }
 
+    /**
+     * Handler for response message
+     * If response message has no more nodes to go to, it has come back to the node that sent it.
+     * It will then print out the event information.
+     * If there are nodes left in the stack, it is sent to the next node.
+     * @param responseMessage
+     */
     private void messageHandler(ResponseMessage responseMessage){
         if (responseMessage.path.empty()) {
             System.out.println("EVENT FOUND:\n Event" + responseMessage.event.getEventId() + " started at position: ["
@@ -204,24 +229,35 @@ public class Node {
         QueryMessage queryMessage = new QueryMessage(eventId, this);
         messageQueue.addLast(queryMessage);
         querysSent.put(queryMessage, 0);
-        //System.out.println("Node[" + nodePosition.getX() +":"+ nodePosition.getY() + "] created a query");
     }
 
+    /**
+     * Creates a response message in response to an answered query message.
+     * @param queryPath stack with nodes the query message visited to get here.
+     * @param event event that was requested.
+     * @return The response message.
+     */
     private ResponseMessage createResponseMessage(Stack<Node> queryPath, Event event){
-        ResponseMessage responseMessage = new ResponseMessage(queryPath, event);
 
-        //System.out.println("Node[" + nodePosition.getX() +":"+ nodePosition.getY() + "] created a response");
-
-        return responseMessage;
+        return new ResponseMessage(queryPath, event);
     }
 
-    public void createAgentMessage(int eventId){
+    /**
+     * Creates an agent message.
+     * Agent starts by knowing about the event that was created along with the agent.
+     * @param eventId
+     */
+    private void createAgentMessage(int eventId){
         AgentMessage agentMessage = new AgentMessage(eventId, this);
         messageQueue.addLast(agentMessage);
-
-        //System.out.println("Node[" + nodePosition.getX() +":"+ nodePosition.getY() + "] created an agent");
     }
 
+    /**
+     * Sets neighbour nodes to the node.
+     * Also sets itself as the neighbour to the neighbour node.
+     * @param neighbourNode to be set as neighbour node
+     * @param direction in what direction the neighbour is.
+     */
     public void setNeighbour(Node neighbourNode, Direction direction){
         if(neighbours[direction.ordinal()] == null) {
             neighbours[direction.ordinal()] = neighbourNode;
@@ -237,6 +273,12 @@ public class Node {
         return neighbours;
     }
 
+    /**
+     * Creates an event with the event id and timestamp given by the environment
+     * @param eventId id to be set as event id
+     * @param timestamp when the event was created
+     * @return the created event.
+     */
     public Event createEvent(int eventId, int timestamp){
         Event event = new Event(eventId, timestamp, this);
         nodesEvents.put(eventId,event);
@@ -245,21 +287,28 @@ public class Node {
         eventPath.push(this);
         nodeRoutingTable.setEventPath(eventId, eventPath);
 
-        //System.out.println("Node[" + nodePosition.getX() +":"+ nodePosition.getY() + "] created event" + eventId);
-
         Random random = new Random();
-        if(random.nextInt(agentChance) > 0){
-            //lägg till agenten i nodens kö
+
+        if(random.nextFloat() < agentChance){
             createAgentMessage(event.getEventId());
         }
 
         return event;
     }
 
+    /**
+     * Adds a specific message last to the work queue.
+     * Used as a way to "move" one message from one node to another.
+     * @param message to be added to the queue.
+     */
     private void addMessageToQueue(Message message){
         this.messageQueue.addLast(message);
     }
 
+    /**
+     * Returns a random neighbour
+     * @return neighbour node.
+     */
     private Node getRandomNeighbour(){
         Random random = new Random();
         Node nextNode = null;
@@ -277,9 +326,13 @@ public class Node {
      * @return
      */
     public RoutingTable getNodeRT(){
-        return this.nodeRoutingTable;
+        return nodeRoutingTable;
     }
 
+    /**
+     *  Calculates nodes succesrate by dividing succesful querys by total querys sent
+     * @return succesrate as decimals
+     */
     public float getSuccessRate(){
         if(querysSent.size() > 0){
             return (float)querysAnswered / querysSent.size();
@@ -288,7 +341,13 @@ public class Node {
         }
     }
 
+    /**
+     * Method to get number of queries sent.
+     * Useful information when determining the success rate of the node.
+     * @return
+     */
     public int getQueriesSent(){
         return querysSent.size();
     }
+
 }

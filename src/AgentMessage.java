@@ -14,7 +14,7 @@ public class AgentMessage extends Message{
     /**
      * AgentMessage()
      * Default constructor
-     *
+     * Requires the event that was created along with the agent, as well as the node that creates both.
      */
     public AgentMessage(int event, Node startNode){
         super(event, startNode);
@@ -30,13 +30,7 @@ public class AgentMessage extends Message{
      *
      */
     public void move(Node newNode){
-
-        //agent synkar RT med ny nod
-        //agent går
-        //agent uppdaterar path till sitt startevent
-
         path.push(newNode);
-        //hämta startevent i routingtable
         AMRoutingTable.setEventPath(eventId, path);
         hasMoved = true;
     }

@@ -19,7 +19,7 @@ public class Environment {
      * @param eventChance
      * @param agentChance
      */
-    public Environment(int height, int width, int queryNodes, int eventChance, int agentChance){
+    public Environment(int height, int width, int queryNodes, int eventChance, float agentChance){
         this.xSize = width;
         this.ySize = height;
         this.eventChance = eventChance;
